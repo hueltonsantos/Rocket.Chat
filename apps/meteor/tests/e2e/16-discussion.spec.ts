@@ -1,7 +1,8 @@
-import { test, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
+import { test } from './utils/test';
 import Discussion from './utils/pageobjects/Discussion';
 import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';

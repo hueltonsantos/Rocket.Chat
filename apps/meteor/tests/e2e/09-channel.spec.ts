@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import FlexTab from './utils/pageobjects/FlexTab';
 import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';

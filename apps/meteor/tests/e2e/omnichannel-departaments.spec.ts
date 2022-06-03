@@ -1,5 +1,6 @@
-import { test, Page, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 
+import { test, expect } from './utils/test';
 import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';
 import Departments from './utils/pageobjects/Departments';
