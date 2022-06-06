@@ -74,6 +74,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-meteor_cache-
             ${{ runner.os }}-
+
       - name: Cache meteor
         uses: actions/cache@v2
         with:
@@ -82,6 +83,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-meteor-
             ${{ runner.os }}-
+
       - name: Install Meteor
         run: |
           # Restore bin from cache
@@ -119,8 +121,7 @@ jobs:
       - run: yarn turbo run translation-check
 
       - name: TS typecheck
-        run: |
-          yarn turbo run typecheck
+        run: yarn turbo run typecheck
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -194,10 +195,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup Chrome
-        run: |
-          npm i chromedriver
-
       - name: Configure Replica Set
         run: |
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
@@ -217,17 +214,17 @@ jobs:
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
 
-      - name: Yarn install
-        # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+      - name: Install deps
         run: yarn
 
-      - name: Unit Test
-        run: yarn testunit
-
-      - name: Install Playwright
+      - name: Install deps playwright
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
+          npm i chromedriver
+
+      - name: Unit Test
+        run: yarn testunit
 
       - name: E2E Test API
         env:
@@ -240,7 +237,7 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      - name: E2E Test UI
+      - name: E2E Test UI 🎭
         env:
           TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -251,12 +248,18 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
 
-      - name: Store playwright test trace
+      - name: Store playwright-test-trace 🎭
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: playwright-test-trace
+          name: ee-playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
+
+      - name: Store playwright-coverage 🎭
+        uses: actions/upload-artifact@v2
+        with:
+          name: ee-playwright-coverage
+          path: ./apps/meteor/coverage
 
   test-ee:
     runs-on: ubuntu-20.04
@@ -293,10 +296,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup Chrome
-        run: |
-          npm i chromedriver
-
       - name: Configure Replica Set
         run: |
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
@@ -316,11 +315,20 @@ jobs:
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
 
-      - name: Yarn install
+      - name: Install deps
         run: yarn
+
+      - name: Install deps playwright
+        run: |
+          cd ./apps/meteor
+          npx playwright install --with-deps
+          npm i chromedriver
 
       - name: Build micro services
         run: yarn build
+
+      - name: Unit Test
+        run: yarn testunit
 
       - name: E2E Test API
         env:
@@ -338,12 +346,7 @@ jobs:
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      - name: Install Playwright
-        run: |
-          cd ./apps/meteor/
-          npx playwright install --with-deps
-
-      - name: E2E Test UI
+      - name: E2E UI Test 🎭
         env:
           TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -361,12 +364,18 @@ jobs:
 
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright:ee
 
-      - name: Store playwright test trace
+      - name: Store playwright-test-trace 🎭
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
+
+      - name: Store playwright-coverage 🎭
+        uses: actions/upload-artifact@v2
+        with:
+          name: ee-playwright-coverage
+          path: ./apps/meteor/coverage
 
   #   notification:
   #     runs-on: ubuntu-20.04
