@@ -1,12 +1,15 @@
 import { test, expect } from './utils/test';
 import LoginPage from './utils/pageobjects/LoginPage';
+import Global from './utils/pageobjects/Global';
 import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Forgot Password]', () => {
 	let loginPage: LoginPage;
+	let global: Global;
 
 	test.beforeEach(async ({ page, baseURL }) => {
 		loginPage = new LoginPage(page);
+		global = new Global(page);
 		const baseUrl = baseURL as string;
 		await loginPage.goto(baseUrl);
 		await loginPage.gotToForgotPassword();
@@ -33,6 +36,6 @@ test.describe('[Forgot Password]', () => {
 	test('expect user type a valid email', async () => {
 		await loginPage.emailField().type(VALID_EMAIL);
 		await loginPage.submit();
-		await expect(loginPage.getToastMessageSuccess()).toBeVisible();
+		await expect(global.getToastBarSuccess()).toBeVisible();
 	});
 });
