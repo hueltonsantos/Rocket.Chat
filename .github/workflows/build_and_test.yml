@@ -217,7 +217,7 @@ jobs:
       - name: Install deps
         run: yarn
 
-      - name: Install deps playwright
+      - name: 🎭 Install playwright deps
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
@@ -265,7 +265,7 @@ jobs:
         run: |
           NYC_OUTPUT=$(yarn test:nyc)
           COVERAGE_REPORTS=$(grep -o '[^ ]*%' <<< "$NYC_OUTPUT")
-          echo "REPORT_STATEMENTS=$(sed -n 1p <<< "$COVERAGE_REPORTS")" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
 
       - name: 🎭 Publish e2e:coverage badge
         uses: RocketChat/ghpages-dynamic-badges-action
