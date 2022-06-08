@@ -221,7 +221,6 @@ jobs:
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
-          npm i chromedriver
 
       - name: Unit Test
         run: yarn testunit
@@ -331,11 +330,10 @@ jobs:
       - name: Install deps
         run: yarn
 
-      - name: Install deps playwright
+      - name: 🎭 Install playwright deps
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
-          npm i chromedriver
 
       - name: Build micro services
         run: yarn build
