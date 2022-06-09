@@ -260,19 +260,6 @@ jobs:
           name: playwright-coverage
           path: ./apps/meteor/coverage
 
-      - name: 🎭 Extract e2e:coverage
-        run: |
-          NYC_OUTPUT=$(yarn test:nyc)
-          COVERAGE_REPORTS=$(grep -o '[^ ]*%' <<< "$NYC_OUTPUT")
-          echo "" >> $GITHUB_ENV
-
-      - name: 🎭 Publish e2e:coverage badge
-        uses: RocketChat/ghpages-dynamic-badges-action@v1.0.0
-        with:
-          label: "e2e:coverage"
-          message: "${{ env.REPORT_STATEMENTS }}"
-          target_folder: "./apps/meteor/tests/coverage-badges"
-
   test-ee:
     runs-on: ubuntu-20.04
     needs: build
@@ -388,16 +375,16 @@ jobs:
           name: ee-playwright-coverage
           path: ./apps/meteor/coverage
 
-      - name: 🎭 Extract e2e:ee:coverage
+      - name: 🎭 Extract e2e:coverage
         run: |
           NYC_OUTPUT=$(yarn test:nyc)
           COVERAGE_REPORTS=$(grep -o '[^ ]*%' <<< "$NYC_OUTPUT")
           echo "REPORT_STATEMENTS=$(sed -n 1p <<< "$COVERAGE_REPORTS")" >> $GITHUB_ENV
 
-      - name: 🎭 Publish e2e:ee:coverage badge
+      - name: 🎭 Publish e2e:coverage badge
         uses: RocketChat/ghpages-dynamic-badges-action@v1.0.0
         with:
-          label: "e2e:ee:coverage"
+          label: "e2e:coverage"
           message: "${{ env.REPORT_STATEMENTS }}"
           target_folder: "./apps/meteor/tests/coverage-badges"
 
